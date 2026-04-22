@@ -1,49 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyWebhookSignature } from "@/lib/lemonsqueezy";
-import { setSubscriptionStatus } from "@/lib/supabase";
 
-type LemonPayload = {
-  meta?: {
-    event_name?: string;
-    custom_data?: {
-      username?: string;
-    };
-  };
-  data?: {
-    attributes?: {
-      user_email?: string;
-      status?: string;
-      custom_data?: {
-        username?: string;
-      };
-    };
-  };
-};
+import { verifyLemonSignature, type LemonWebhookPayload } from "@/lib/lemonsqueezy";
+import { markSessionAsPaid } from "@/lib/paywall-store";
 
 export async function POST(request: NextRequest) {
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
+
+  if (!secret) {
+    return NextResponse.json({ error: "Lemon Squeezy webhook secret is not configured." }, { status: 500 });
+  }
+
   const rawBody = await request.text();
   const signature = request.headers.get("x-signature");
 
-  if (!verifyWebhookSignature(rawBody, signature)) {
-    return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 });
+  if (!verifyLemonSignature(rawBody, signature, secret)) {
+    return NextResponse.json({ error: "Invalid webhook signature." }, { status: 401 });
   }
 
-  const payload = JSON.parse(rawBody) as LemonPayload;
-  const eventName = payload.meta?.event_name ?? "";
+  const payload = JSON.parse(rawBody) as LemonWebhookPayload;
+  const eventName = payload.meta?.event_name;
 
-  const username =
-    payload.meta?.custom_data?.username ?? payload.data?.attributes?.custom_data?.username ?? payload.data?.attributes?.user_email ?? null;
+  if (eventName === "order_created" || eventName === "subscription_created") {
+    const sessionId =
+      payload.meta?.custom_data?.checkout_session_id ?? payload.data?.attributes?.identifier ?? payload.data?.id ?? "";
 
-  if (username) {
-    const activeEvents = new Set(["subscription_created", "subscription_resumed", "order_created"]);
-    const inactiveEvents = new Set(["subscription_expired", "subscription_cancelled", "subscription_paused"]);
-
-    if (activeEvents.has(eventName)) {
-      await setSubscriptionStatus(username, true);
-    }
-
-    if (inactiveEvents.has(eventName)) {
-      await setSubscriptionStatus(username, false);
+    if (sessionId) {
+      await markSessionAsPaid(sessionId, "lemonsqueezy");
     }
   }
 

@@ -1,111 +1,183 @@
 import Link from "next/link";
-import { CheckoutButton } from "@/components/CheckoutButton";
-import { getCheckoutUrl } from "@/lib/lemonsqueezy";
-import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, CheckCircle2, FileCode2, LayoutTemplate, TrendingUp } from "lucide-react";
 
-const faqItems = [
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+const faqs = [
   {
-    question: "How does this differ from a normal GitHub profile?",
+    question: "What does Project Showcase actually build for me?",
     answer:
-      "GitHub shows files and commits, not business value. Project Showcase generates clear case studies with technical metrics, architecture framing, and impact language you can send to recruiters or clients."
+      "You get a public portfolio page that translates raw repository data into clear case studies: project goals, architecture decisions, measurable traction, and stack depth."
   },
   {
-    question: "What do I need to get started?",
+    question: "Do I need design skills to make this look good?",
     answer:
-      "Sign in with GitHub, sync your repositories, and choose the projects you want to feature. The app creates polished pages you can share as your portfolio link."
+      "No. The product is built for developers who can code but struggle with positioning. It generates structured narratives and a polished visual layout by default."
   },
   {
-    question: "Can I publish multiple projects?",
+    question: "Can I choose which repositories appear publicly?",
     answer:
-      "Yes. You can build a full portfolio from multiple repositories and keep it updated as your code evolves."
+      "Yes. You select your flagship repos, customize your headline and positioning, and publish only the work that supports your career goals."
+  },
+  {
+    question: "How does payment work?",
+    answer:
+      "Payment is handled by Stripe hosted checkout. After payment, your account unlocks and you can access the builder dashboard behind a cookie-based paywall."
   }
 ];
 
-export default function HomePage() {
-  const checkoutUrl = getCheckoutUrl();
-
+export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-[#0d1117] text-[#c9d1d9]">
-      <section className="mx-auto max-w-6xl px-6 pb-20 pt-16 md:pt-24">
-        <p className="mb-4 inline-flex rounded-full border border-[#30363d] bg-[#161b22] px-3 py-1 text-xs uppercase tracking-[0.16em] text-[#7d8590]">
-          Portfolio Tools
-        </p>
-        <h1 className="max-w-3xl text-4xl font-bold leading-tight text-white md:text-6xl">
-          Beautiful portfolio for your side projects
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg text-[#9aa4af]">
-          Project Showcase transforms your GitHub repos into premium case studies with metrics, outcomes, and narrative clarity so hiring managers and clients immediately understand your value.
-        </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <CheckoutButton
-            checkoutUrl={checkoutUrl}
-            className="rounded-lg bg-[#1f6feb] px-6 py-3 text-base font-semibold text-white transition hover:bg-[#388bfd]"
-          />
-          <Link
-            href="/api/auth/github"
-            className="rounded-lg border border-[#30363d] bg-[#161b22] px-6 py-3 text-base font-semibold text-[#c9d1d9] transition hover:border-[#58a6ff]"
-          >
-            Connect GitHub
-          </Link>
+    <main className="min-h-screen">
+      <section className="mx-auto max-w-6xl px-6 pb-16 pt-20 md:pt-24">
+        <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="inline-flex items-center rounded-full border border-[#30363d] bg-[#161b22] px-3 py-1 text-xs text-[#8b949e]">
+              Portfolio Tools • $7/month
+            </p>
+            <h1 className="mt-6 text-4xl font-bold leading-tight text-white md:text-6xl">
+              Beautiful portfolio for your side projects
+            </h1>
+            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-[#8b949e]">
+              GitHub repositories prove you can code. They do not prove product thinking, communication, or delivery impact. Project Showcase
+              turns your repos into persuasive case studies that help hiring managers and clients see your real value.
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a href={process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK}>
+                <Button size="lg" className="gap-2">
+                  Start for $7/month
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </a>
+              <Link href="/unlock">
+                <Button size="lg" variant="outline">
+                  I already paid
+                </Button>
+              </Link>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-4 text-sm text-[#8b949e]">
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-[#3fb950]" />
+                GitHub import in seconds
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-[#3fb950]" />
+                Narrative case-study generation
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-[#3fb950]" />
+                Public shareable portfolio URL
+              </span>
+            </div>
+          </div>
+
+          <Card className="border-[#30363d] bg-[#161b22]">
+            <CardHeader>
+              <CardTitle className="text-white">What recruiters see</CardTitle>
+              <CardDescription>From unreadable commit history to a concise value story in under 5 minutes.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-sm">
+              <div className="rounded-lg border border-[#30363d] bg-[#0d1117] p-3">
+                <p className="font-medium text-white">Before</p>
+                <p className="mt-1 text-[#8b949e]">List of repositories with no context, no outcomes, and no explanation of tradeoffs.</p>
+              </div>
+              <div className="rounded-lg border border-[#238636]/40 bg-[#0d1117] p-3">
+                <p className="font-medium text-white">After</p>
+                <p className="mt-1 text-[#8b949e]">
+                  Structured project pages with stack depth, architecture choices, impact metrics, and links to source + demos.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
-      <section className="border-y border-[#21262d] bg-[#0f141b]">
+      <section className="border-y border-[#21262d] bg-[#0d1117]/70">
         <div className="mx-auto grid max-w-6xl gap-6 px-6 py-14 md:grid-cols-3">
-          <Card>
-            <CardContent>
-            <h2 className="text-xl font-semibold text-white">The Problem</h2>
-            <p className="mt-3 text-[#9aa4af]">
-              Strong developers lose opportunities because raw repositories do not explain decision quality, business impact, or engineering maturity.
-            </p>
+          <Card className="border-[#30363d] bg-[#161b22]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg text-white">
+                <FileCode2 className="h-5 w-5 text-[#58a6ff]" />
+                The Problem
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#8b949e]">
+              Strong engineers lose opportunities because raw repositories fail to communicate product outcomes, technical leadership, and business relevance.
             </CardContent>
           </Card>
-          <Card>
-            <CardContent>
-            <h2 className="text-xl font-semibold text-white">The Solution</h2>
-            <p className="mt-3 text-[#9aa4af]">
-              Convert code into clear project stories with architecture framing, velocity signals, quality scores, and recruiter-ready summaries.
-            </p>
+
+          <Card className="border-[#30363d] bg-[#161b22]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg text-white">
+                <LayoutTemplate className="h-5 w-5 text-[#58a6ff]" />
+                The Solution
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#8b949e]">
+              Automated case-study generation combines GitHub metadata, code metrics, and customizable messaging into a portfolio designed for decision-makers.
             </CardContent>
           </Card>
-          <Card>
-            <CardContent>
-            <h2 className="text-xl font-semibold text-white">The Buyer</h2>
-            <p className="mt-3 text-[#9aa4af]">
-              Mid-level developers who build side projects and want better roles or freelance clients without becoming marketing experts.
-            </p>
+
+          <Card className="border-[#30363d] bg-[#161b22]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg text-white">
+                <TrendingUp className="h-5 w-5 text-[#58a6ff]" />
+                Why It Works
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-[#8b949e]">
+              Hiring teams scan quickly. This format surfaces impact signals immediately, making your work easier to evaluate and easier to remember.
             </CardContent>
           </Card>
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="text-3xl font-bold text-white">Pricing</h2>
-        <div className="mt-6 rounded-2xl border border-[#1f6feb] bg-[#161b22] p-8">
-          <p className="text-sm uppercase tracking-[0.15em] text-[#58a6ff]">Single plan</p>
-          <p className="mt-3 text-5xl font-bold text-white">$7<span className="text-xl text-[#9aa4af]">/month</span></p>
-          <ul className="mt-6 space-y-2 text-[#c9d1d9]">
-            <li>Unlimited repository syncing</li>
-            <li>AI-generated case study narratives</li>
-            <li>Public portfolio page at `/portfolio/your-username`</li>
-            <li>Technical metrics dashboard with weekly refresh</li>
-          </ul>
-          <CheckoutButton
-            checkoutUrl={checkoutUrl}
-            className="mt-8 rounded-lg bg-[#1f6feb] px-6 py-3 text-base font-semibold text-white transition hover:bg-[#388bfd]"
-          />
+        <div className="grid gap-8 lg:grid-cols-[1fr_1fr]">
+          <div>
+            <h2 className="text-3xl font-semibold text-white">Simple pricing for serious developers</h2>
+            <p className="mt-3 text-[#8b949e]">
+              One plan focused on getting your portfolio interview-ready. No feature gating inside the builder.
+            </p>
+          </div>
+
+          <Card className="border-[#238636]/40 bg-[#161b22]">
+            <CardHeader>
+              <CardTitle className="text-2xl text-white">Pro Portfolio</CardTitle>
+              <CardDescription>Everything you need to turn side projects into opportunities.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-4xl font-bold text-white">
+                $7<span className="text-base font-medium text-[#8b949e]">/month</span>
+              </p>
+              <ul className="mt-5 space-y-2 text-sm text-[#c9d1d9]">
+                <li>Unlimited repository imports</li>
+                <li>Case-study narrative generation</li>
+                <li>Custom portfolio headline and positioning</li>
+                <li>Public portfolio URL for resumes and outreach</li>
+              </ul>
+              <a href={process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK} className="mt-6 block">
+                <Button className="w-full" size="lg">
+                  Buy now
+                </Button>
+              </a>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 pb-20">
-        <h2 className="text-3xl font-bold text-white">FAQ</h2>
-        <div className="mt-6 space-y-4">
-          {faqItems.map((item) => (
-            <Card key={item.question}>
-              <CardContent>
-              <h3 className="text-lg font-semibold text-white">{item.question}</h3>
-              <p className="mt-2 text-[#9aa4af]">{item.answer}</p>
-              </CardContent>
+      <section className="mx-auto max-w-6xl px-6 pb-24">
+        <h2 className="text-3xl font-semibold text-white">FAQ</h2>
+        <div className="mt-8 grid gap-4">
+          {faqs.map((faq) => (
+            <Card key={faq.question} className="border-[#30363d] bg-[#161b22]">
+              <CardHeader>
+                <CardTitle className="text-lg text-white">{faq.question}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-[#8b949e]">{faq.answer}</CardContent>
             </Card>
           ))}
         </div>

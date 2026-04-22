@@ -1,64 +1,39 @@
 import Link from "next/link";
 import { cookies } from "next/headers";
-import { DashboardClient } from "@/components/DashboardClient";
-import { getShowcase } from "@/lib/supabase";
-import { getCheckoutUrl } from "@/lib/lemonsqueezy";
-import { CheckoutButton } from "@/components/CheckoutButton";
-import { Card, CardContent } from "@/components/ui/card";
-import { buttonVariants } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+import { PortfolioBuilder } from "@/components/portfolio-builder";
+import { Button } from "@/components/ui/button";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
-  const hasPaidAccess = cookieStore.get("pps_paid")?.value === "1";
-  const githubConnected = Boolean(cookieStore.get("gh_token")?.value);
+  const hasAccess = cookieStore.get("pps_access")?.value === "granted";
 
-  if (!hasPaidAccess) {
-    return (
-      <main className="mx-auto min-h-screen max-w-4xl px-6 py-16 text-[#c9d1d9]">
-        <Card className="rounded-2xl">
-          <CardContent className="p-8">
-          <h1 className="text-3xl font-bold text-white">Portfolio Builder is locked</h1>
-          <p className="mt-3 text-[#9aa4af]">
-            Your subscription unlocks repository sync, portfolio generation, and your public showcase page.
-          </p>
-          <CheckoutButton
-            checkoutUrl={getCheckoutUrl()}
-            className="mt-6 rounded-lg bg-[#1f6feb] px-6 py-3 text-base font-semibold text-white transition hover:bg-[#388bfd]"
-          />
-          <p className="mt-4 text-sm text-[#7d8590]">After checkout success, access is granted automatically in this browser.</p>
-          </CardContent>
-        </Card>
-      </main>
-    );
+  if (!hasAccess) {
+    redirect("/unlock");
   }
-
-  if (!githubConnected) {
-    return (
-      <main className="mx-auto min-h-screen max-w-4xl px-6 py-16 text-[#c9d1d9]">
-        <Card className="rounded-2xl">
-          <CardContent className="p-8">
-          <h1 className="text-3xl font-bold text-white">Connect GitHub to continue</h1>
-          <p className="mt-3 text-[#9aa4af]">Repository data powers your metrics and case-study generation.</p>
-          <Link
-            href="/api/auth/github"
-            className={buttonVariants({ size: "lg", className: "mt-6 inline-flex" })}
-          >
-            Connect GitHub Account
-          </Link>
-          </CardContent>
-        </Card>
-      </main>
-    );
-  }
-
-  const username = cookieStore.get("gh_username")?.value;
-  const initialData = username ? await getShowcase(username) : null;
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-6 py-10 text-[#c9d1d9]">
-      <DashboardClient initialData={initialData} />
+    <main className="mx-auto min-h-screen w-full max-w-6xl px-6 py-14">
+      <div className="mb-10 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="inline-flex items-center gap-2 rounded-full border border-[#30363d] bg-[#161b22] px-3 py-1 text-xs text-[#8b949e]">
+            <ShieldCheck className="h-3.5 w-3.5 text-[#3fb950]" />
+            Paid access enabled
+          </p>
+          <h1 className="mt-4 text-4xl font-bold text-white">Portfolio Builder Dashboard</h1>
+          <p className="mt-2 max-w-3xl text-[#8b949e]">
+            Connect your GitHub account, choose your strongest repos, generate case studies, and publish a portfolio that communicates technical value to decision-makers.
+          </p>
+        </div>
+
+        <Link href="/">
+          <Button variant="outline">Back to landing page</Button>
+        </Link>
+      </div>
+
+      <PortfolioBuilder />
     </main>
   );
 }

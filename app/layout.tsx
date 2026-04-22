@@ -1,26 +1,45 @@
 import type { Metadata } from "next";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
+
 import "@/app/globals.css";
 
-const appName = "Project Showcase";
-const description = "Turn your GitHub repositories into professional project case studies that help you win better jobs and freelance clients.";
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk"
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono"
+});
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  metadataBase: new URL("https://projectshowcase.app"),
   title: {
-    default: `${appName} | Beautiful portfolio for your side projects`,
-    template: `%s | ${appName}`
+    default: "Personal Project Showcase | Turn GitHub repos into compelling case studies",
+    template: "%s | Personal Project Showcase"
   },
-  description,
+  description:
+    "Build a professional developer portfolio in minutes. Import GitHub repositories, generate narrative-driven case studies, and publish a polished public page that employers and freelance clients understand.",
+  keywords: [
+    "developer portfolio",
+    "GitHub portfolio",
+    "side project showcase",
+    "software engineer job hunt",
+    "freelance developer profile"
+  ],
   openGraph: {
-    title: `${appName} | Beautiful portfolio for your side projects`,
-    description,
-    siteName: appName,
-    type: "website"
+    type: "website",
+    title: "Personal Project Showcase",
+    description:
+      "Show what you built, why it matters, and the impact it had. Turn repos into polished project stories recruiters can evaluate fast.",
+    url: "https://projectshowcase.app",
+    siteName: "Personal Project Showcase"
   },
   twitter: {
     card: "summary_large_image",
-    title: `${appName} | Beautiful portfolio for your side projects`,
-    description
+    title: "Personal Project Showcase",
+    description: "Transform GitHub repositories into interview-ready project case studies."
   },
   robots: {
     index: true,
@@ -28,10 +47,16 @@ export const metadata: Metadata = {
   }
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className="dark">
+      <body className={`${spaceGrotesk.variable} ${jetBrainsMono.variable} bg-[#0d1117] font-[var(--font-space-grotesk)] text-[#c9d1d9] antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
